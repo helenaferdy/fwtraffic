@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fwtraffic - Firewall Packet Processing Visualizer</title>
+    <meta name="description" content="Comprehensive interactive packet processing visualizer for Cisco FTD, Palo Alto PAN-OS, Fortinet FortiGate, and Check Point.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css?v=3">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="pulse-dot"></span>
+                <div class="logo-title-group">
+                    <h1>fwtraffic</h1>
+                    <div class="logo-tagline">Interactive firewall packet pipeline visualizer</div>
+                </div>
+            </div>
+            
+            <!-- Firewall Brand Selector Tabs -->
+            <div class="brand-tabs-container">
+                <button class="brand-tab active" data-brand="fortigate">Fortigate</button>
+                <button class="brand-tab" data-brand="checkpoint">Check Point</button>
+                <button class="brand-tab" data-brand="paloalto">Palo Alto</button>
+                <button class="brand-tab" data-brand="cisco">FTD</button>
+            </div>
+
+            <div class="status-indicator">
+                <span class="label senap-label" style="font-weight: 700; color: var(--accent-light); letter-spacing: 0.5px; text-shadow: 0 0 10px rgba(0, 168, 255, 0.4);"><a href="https://senaperdiana.com" target="_blank" rel="noopener noreferrer" style="color: inherit; text-decoration: none;">senaperdiana.com</a></span>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Row 1: Parameter Generator & Debug split panel -->
+            <section class="config-panel split-panel glass-card">
+                <div class="config-split-left">
+                <div class="config-panel-content" style="flex: 1; display: flex; flex-direction: column; gap: 0.8rem;">
+                        <div class="config-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0.2rem;">
+                            <h2 style="display: none;"><span class="icon">⚙️</span> Packet Parameter Generator</h2>
+                            <div class="preset-selector-top" style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+                                <div class="selector-row" style="display: flex; gap: 0.5rem; width: 100%; align-items: center;">
+                                    <label for="category-select" style="min-width: 80px; font-weight: 600;">Category:</label>
+                                    <select id="category-select" class="classy-select">
+                                        <!-- Populated dynamically by app.js -->
+                                    </select>
+                                </div>
+                                <div class="selector-row" style="display: flex; gap: 0.5rem; width: 100%; align-items: center;">
+                                    <label for="option-select" style="min-width: 80px; font-weight: 600;">Option:</label>
+                                    <select id="option-select" class="classy-select">
+                                        <!-- Populated dynamically by app.js -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Scenario Controls Row: Verdict Toggle (Hidden) -->
+                        <div class="scenario-controls-row" style="margin-bottom: 0.2rem;">
+                            <div class="verdict-segmented-control" style="display: none;">
+                                <button type="button" id="verdict-allow-btn" class="verdict-seg-btn active-allow">Allowed</button>
+                                <button type="button" id="verdict-deny-btn" class="verdict-seg-btn">Denied</button>
+                            </div>
+                            <span id="override-mode-indicator" class="override-mode-badge" style="display: none;">⚡ Override Mode</span>
+                        </div>
+
+                        <!-- Packets Metadata Context — Read-Only Token Display -->
+                        <div class="metadata-context-block">
+                            <div class="metadata-context-title" style="display: none;"><span class="icon">📋</span> Packet Metadata Context</div>
+                            <div class="metadata-token-grid">
+                                <div class="metadata-token">
+                                    <span class="metadata-token-label">Source IP</span>
+                                    <span class="metadata-token-value" id="meta-src-ip">192.168.1.100</span>
+                                </div>
+                                <div class="metadata-token">
+                                    <span class="metadata-token-label">Destination IP</span>
+                                    <span class="metadata-token-value" id="meta-dst-ip">93.184.216.34</span>
+                                </div>
+                                <div class="metadata-token">
+                                    <span class="metadata-token-label">Protocol</span>
+                                    <span class="metadata-token-value" id="meta-proto">TCP</span>
+                                </div>
+                                <div class="metadata-token">
+                                    <span class="metadata-token-label">Source Port</span>
+                                    <span class="metadata-token-value" id="meta-sport">51001</span>
+                                </div>
+                                <div class="metadata-token">
+                                    <span class="metadata-token-label">Destination Port</span>
+                                    <span class="metadata-token-value" id="meta-dport">80</span>
+                                </div>
+                                <div class="metadata-token">
+                                    <span class="metadata-token-label">Application</span>
+                                    <span class="metadata-token-value" id="meta-app">http</span>
+                                </div>
+                            </div>
+                            <!-- Sleek Contextual Status Bar -->
+                            <div class="metadata-context-bar" id="meta-context-bar">
+                                Active Trace Parameters: Cleartext Web Traffic
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Left Panel aligned footer action button (Hidden) -->
+                    <div class="config-action-footer" style="display: none;">
+                        <button type="button" id="simulate-btn" class="btn primary-btn" style="max-width: 280px; width: 100%;">
+                            <span class="btn-text">Trace Packet Path</span>
+                            <span class="btn-glow"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="config-split-right" style="display: flex; flex-direction: column; height: 100%; justify-content: flex-start; gap: 0.8rem;">
+                    <!-- Config Sub-Tabs Header on the right now! -->
+                    <div class="config-sub-tabs-container" style="margin-bottom: 0.1rem; flex-shrink: 0;">
+                        <button type="button" class="sub-tab active" data-tab="attach">Attach Live Debug</button>
+                        <button type="button" class="sub-tab" data-tab="guide">CLI Trace Guide</button>
+                    </div>
+
+                    <!-- Right panel content wrapper -->
+                    <div class="config-panel-content" style="flex: 1; display: flex; flex-direction: column; gap: 0.8rem; justify-content: flex-start; min-height: 0;">
+                        <!-- Content Tab A: Attach Log -->
+                        <div id="sub-tab-content-attach" class="sub-tab-content active" style="width: 100%; gap: 0.6rem; flex: 1; min-height: 0;">
+                            <div class="config-header" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0.1rem; flex-shrink: 0;">
+                                <h2><span class="icon">🔌</span> Attach Live Debug / Trace Log</h2>
+                            </div>
+                            <div class="debug-attach-container" style="width: 100%; display: flex; flex-direction: column; gap: 0.6rem; flex: 1; min-height: 0;">
+                                <textarea id="raw-debug-log" class="debug-textarea" style="width: 100%; flex: 1; min-height: 100px; resize: none;" placeholder="Paste CLI packet-tracer, diagnose flow, or fw monitor outputs here to trigger a custom log-parsed animation sequence..."></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Content Tab B: Guide Tab -->
+                        <div id="sub-tab-content-guide" class="sub-tab-content" style="width: 100%; gap: 0.6rem; flex: 1; min-height: 0;">
+                            <div class="guide-header" style="display: none;">
+                                <h2><span class="icon">📖</span> CLI Debugging & Trace Guides</h2>
+                                <p class="guide-intro">Select the active brand above to dynamically load copy-pasteable commands for live command-line debug catches.</p>
+                            </div>
+                            <div style="position: relative; width: 100%; flex: 1; min-height: 100px; display: flex; flex-direction: column;">
+                                <button type="button" id="copy-guide-btn" class="ctrl-btn" style="position: absolute; top: 8px; right: 8px; z-index: 10; padding: 0.3rem 0.6rem; font-size: 0.75rem; border-radius: 4px; display: none; background: rgba(15, 23, 42, 0.75); border: 1px solid var(--border-color); color: #fff; cursor: pointer;">📋 Copy</button>
+                                <div class="guide-brand-content" id="guide-brand-content-box" style="width: 100%; flex: 1; overflow-y: auto; background: rgba(0, 0, 0, 0.15); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.6rem;">
+                                    <!-- Populated dynamically by app.js depending on active brand tab selection -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Row 2: Grid side-by-side (Pipeline & Details match in height) -->
+            <div class="workspace-grid-bottom">
+                <!-- Left Column: Pipeline Only -->
+                <div class="left-workspace-col">
+                    <div class="visualizer-canvas glass-card">
+                        <div class="canvas-header" style="display: none;">
+                            <h2 id="pipeline-title-brand" style="display: none;">Fortigate Inspection Pipeline</h2>
+                            <div class="anim-controls" style="display: none;">
+                                <button id="prev-step" class="ctrl-btn" disabled>&lt; Back</button>
+                                <button id="play-pause" class="ctrl-btn">Play</button>
+                                <button id="next-step" class="ctrl-btn">Next &gt;</button>
+                                <button id="reset-sim" class="ctrl-btn">Reset</button>
+                            </div>
+                        </div>
+
+                        <div id="pipeline-canvas-container" class="pipeline-container">
+                            
+                            <!-- 1. Cisco FTD Pipeline Flow -->
+                            <div id="brand-flow-cisco" class="brand-flow-layout">
+                                <div class="pipeline-section-title">LINA Firewall Engine (Layer 3 / 4)</div>
+                                <div class="pipeline-grid">
+                                    <div class="node" id="node-ingress" data-step="ingress"><div class="node-title">Ingress Physical</div><span class="badge lina-badge">LINA</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-capture" data-step="capture"><div class="node-title">Capture Check</div><span class="badge lina-badge">LINA</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-lina_defrag" data-step="lina_defrag"><div class="node-title">IP Defrag</div><span class="badge lina-badge">LINA</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node decision" id="node-existing_conn" data-step="existing_conn"><div class="node-title">Existing Conn?</div><span class="badge lina-badge">LINA</span></div>
+                                </div>
+                                <div class="cisco-bypass-wrapper" style="position: relative; display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                                    <div class="pipeline-connector-down">Slow-Path Flow</div>
+                                    <div class="pipeline-grid">
+                                        <div class="node" id="node-vpn_decrypt" data-step="vpn_decrypt"><div class="node-title">VPN Decrypt</div><span class="badge lina-badge">LINA</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-un_nat" data-step="un_nat"><div class="node-title">UN-NAT (DNAT)</div><span class="badge lina-badge">LINA</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-l3_route" data-step="l3_route"><div class="node-title">L3 Route Lookup</div><span class="badge lina-badge">LINA</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-prefilter" data-step="prefilter"><div class="node-title">Prefilter Policy</div><span class="badge lina-badge">LINA</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-l3_l4_acl" data-step="l3_l4_acl"><div class="node-title">L3/L4 ACL</div><span class="badge lina-badge">LINA</span></div>
+                                    </div>
+                                    <div class="pipeline-connector-down snort-connector">Handover to Snort 3 Engine</div>
+                                    <div class="pipeline-section-title snort-header">Snort 3 Threat Prevention (Layer 7)</div>
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: center; width: 100%;">
+                                        <div class="pipeline-grid" style="justify-content: center;">
+                                            <div class="node" id="node-daq" data-step="daq"><div class="node-title">DAQ Handover</div><span class="badge snort-badge">Snort</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-snort_defrag" data-step="snort_defrag"><div class="node-title">Stream Defrag</div><span class="badge snort-badge">Snort</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-ssl_decrypt" data-step="ssl_decrypt"><div class="node-title">SSL Decrypt</div><span class="badge snort-badge">Snort</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-security_intel" data-step="security_intel"><div class="node-title">Security Intel</div><span class="badge snort-badge">Snort</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-identity_policy" data-step="identity_policy"><div class="node-title">Identity Rule</div><span class="badge snort-badge">Snort</span></div>
+                                        </div>
+                                        <div class="node-arrow" style="margin: 0; font-size: 0.8rem; line-height: 1;">↓</div>
+                                        <div class="pipeline-grid" style="justify-content: center;">
+                                            <div class="node" id="node-l7_acl" data-step="l7_acl"><div class="node-title">L7 App Filter</div><span class="badge snort-badge">Snort</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-url_filter" data-step="url_filter"><div class="node-title">URL Filtering</div><span class="badge snort-badge">Snort</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-ips" data-step="ips"><div class="node-title">IPS (Snort 3)</div><span class="badge snort-badge">Snort</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-file_malware" data-step="file_malware"><div class="node-title">AMP Malware</div><span class="badge snort-badge">Snort</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node decision" id="node-ssl_encrypt" data-step="ssl_encrypt"><div class="node-title">SSL Encrypt</div><span class="badge snort-badge">Snort</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="pipeline-connector-down">Egress Post-Processing</div>
+                                    <div class="pipeline-section-title">LINA Egress core processing</div>
+                                    <div class="pipeline-grid">
+                                        <div class="node" id="node-flow_update" data-step="flow_update"><div class="node-title">Flow Update</div><span class="badge lina-badge">LINA</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-egress_nat" data-step="egress_nat"><div class="node-title">Egress NAT (PAT)</div><span class="badge lina-badge">PAT Source</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-qos" data-step="qos"><div class="node-title">QoS Shaping</div><span class="badge lina-badge">LINA</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-vpn_encrypt" data-step="vpn_encrypt"><div class="node-title">VPN Encrypt</div><span class="badge lina-badge">Crypto Tunnel Engine</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-l2_arp" data-step="l2_arp"><div class="node-title">L2 ARP Gateway</div><span class="badge lina-badge">LINA</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-egress" data-step="egress"><div class="node-title">Egress Send</div><span class="badge lina-badge">LINA</span></div>
+                                    </div>
+                                    <div class="cisco-fastpath-bypass-connector">
+                                        <span class="bypass-label">Prefilter Trust/Fastpath Bypass</span>
+                                        <span class="bypass-arrow">↓</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. Palo Alto PAN-OS Pipeline Flow (Detailed SP3) -->
+                            <div id="brand-flow-paloalto" class="brand-flow-layout">
+                                <div class="pipeline-section-title">Ingress Process</div>
+                                <div class="pipeline-grid">
+                                    <div class="node" id="node-pa_ingress_receive" data-step="pa_ingress_receive"><div class="node-title">Receive Packet</div><span class="badge lina-badge">ethernet1/1</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-pa_ingress_parse" data-step="pa_ingress_parse"><div class="node-title">Parsing & Zone</div><span class="badge lina-badge">Parser</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node decision" id="node-pa_ingress_error" data-step="pa_ingress_error"><div class="node-title">Ingress Error?</div><span class="badge lina-badge">Zone Protection</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node decision" id="node-pa_ingress_fw_inspect" data-step="pa_ingress_fw_inspect"><div class="node-title">FW Inspect?</div><span class="badge lina-badge">Inspection Check</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node decision" id="node-pa_ingress_vpn_decrypt" data-step="pa_ingress_vpn_decrypt"><div class="node-title">VPN Decrypt?</div><span class="badge lina-badge">IPsec/SSL VPN</span></div>
+                                </div>
+                                
+                                <div class="pipeline-connector-down palo-connector">SP3 Split Gateway (Forks into Session Setup vs Fastpath Acceleration)</div>
+                                
+                                <div class="pipeline-swimlanes">
+                                    <div class="swimlane-branch">
+                                        <div class="swimlane-title">Branch A: Slowpath / Session Setup</div>
+                                        <div class="pipeline-grid">
+                                            <div class="node" id="node-pa_slow_forwarding" data-step="pa_slow_forwarding"><div class="node-title">Forwarding</div><span class="badge lina-badge">Route Lookup</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-pa_slow_nat" data-step="pa_slow_nat"><div class="node-title">NAT Policy</div><span class="badge lina-badge">DNAT Check</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-pa_slow_security_policy" data-step="pa_slow_security_policy"><div class="node-title">Security Policy</div><span class="badge lina-badge">L3/L4 Rulebase</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-pa_slow_session_install" data-step="pa_slow_session_install"><div class="node-title">Install Session</div><span class="badge lina-badge">Session Table</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="swimlane-branch">
+                                        <div class="swimlane-title">Branch B: Fastpath Acceleration</div>
+                                        <div class="pipeline-grid">
+                                            <div class="node" id="node-pa_fast_session_lookup" data-step="pa_fast_session_lookup"><div class="node-title">Session Lookup</div><span class="badge lina-badge">Session Engine</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-pa_fast_l2_l4" data-step="pa_fast_l2_l4"><div class="node-title">L2 - 4 Process</div><span class="badge lina-badge">Timer Update</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pa-bypass-wrapper" style="position: relative; display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                                    <div class="pipeline-connector-down palo-connector">SSL Inspection Gateway</div>
+                                    <div class="pipeline-grid" style="justify-content: center;">
+                                        <div class="node decision" id="node-pa_fast_ssl_decrypt" data-step="pa_fast_ssl_decrypt"><div class="node-title">SSL Decrypt?</div><span class="badge palo-badge">SSL Proxy</span></div>
+                                    </div>
+                                    
+                                    <div class="pipeline-connector-down palo-connector">Dynamic App Identification (App-ID Engine Core Loop)</div>
+                                    <div class="pipeline-section-title palo-header">Application Identification (App-ID)</div>
+                                    <div class="pipeline-grid">
+                                        <div class="node" id="node-pa_app_pattern" data-step="pa_app_pattern"><div class="node-title">Pattern App-ID</div><span class="badge palo-badge">App ID</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node decision" id="node-pa_app_rematch" data-step="pa_app_rematch"><div class="node-title">Policy Re-Match Loop</div><span class="badge palo-badge">L7 Rulebase</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node decision" id="node-pa_app_allow_check" data-step="pa_app_allow_check"><div class="node-title">App Allowed Check</div><span class="badge palo-badge">Action Verify</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-pa_app_sp3_setup" data-step="pa_app_sp3_setup"><div class="node-title">Scan Setup</div><span class="badge palo-badge">SP3 Initialize</span></div>
+                                    </div>
+                                    
+                                    <div class="pipeline-connector-down palo-connector">Content-ID Parallel Engine</div>
+                                    <div class="pipeline-section-title palo-header">Single-Pass Parallel Scan Engine</div>
+                                    <div class="parallel-card-wrapper">
+                                        <div class="parallel-grid">
+                                            <div class="node" id="node-pa_content_av" data-step="pa_content_av"><div class="node-title">Antivirus</div><span class="badge palo-badge">Content-ID</span></div>
+                                            <div class="node" id="node-pa_content_vuln" data-step="pa_content_vuln"><div class="node-title">Vulnerability Protection</div><span class="badge palo-badge">Content-ID</span></div>
+                                            <div class="node" id="node-pa_content_spyware" data-step="pa_content_spyware"><div class="node-title">Anti-Spyware</div><span class="badge palo-badge">Content-ID</span></div>
+                                            <div class="node" id="node-pa_content_wildfire" data-step="pa_content_wildfire"><div class="node-title">WildFire Analysis</div><span class="badge palo-badge">Content-ID</span></div>
+                                            <div class="node" id="node-pa_content_url" data-step="pa_content_url"><div class="node-title">URL Filtering</div><span class="badge palo-badge">Content-ID</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="pa-fastpath-bypass-connector">
+                                        <span class="bypass-label">SP3 App-ID Bypass Lane</span>
+                                        <span class="bypass-arrow">↓</span>
+                                    </div>
+                                </div>
+
+                                <div class="pipeline-connector-down palo-connector">SSL Encryption Gateway</div>
+                                <div class="pipeline-grid" style="justify-content: center;">
+                                    <div class="node decision" id="node-pa_content_ssl_encrypt" data-step="pa_content_ssl_encrypt"><div class="node-title">SSL Re-encrypt</div><span class="badge palo-badge">SSL Proxy</span></div>
+                                </div>
+                                
+                                <div class="pipeline-section-title">Forwarding / Egress</div>
+                                <div class="pipeline-grid">
+                                    <div class="node" id="node-pa_egress_processing" data-step="pa_egress_processing"><div class="node-title">Egress Processing</div><span class="badge palo-badge">QoS &amp; Route</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-pa_egress_vpn_encrypt" data-step="pa_egress_vpn_encrypt"><div class="node-title">VPN Encrypt</div><span class="badge palo-badge">IPsec Encapsulate</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-pa_egress_transmission" data-step="pa_egress_transmission"><div class="node-title">Transmission</div><span class="badge palo-badge">Egress Wire</span></div>
+                                </div>
+                            </div>
+
+                            <!-- 3. Fortinet FortiGate Flow (Life of a Packet) -->
+                            <div id="brand-flow-fortigate" class="brand-flow-layout active">
+                                <div class="pipeline-section-title">Ingress Packet Flow (Link Layer & Ingress Security)</div>
+                                <div class="pipeline-grid">
+                                    <div class="node" id="node-fg_ingress" data-step="fg_ingress"><div class="node-title">Interface (L2)</div><span class="badge lina-badge">Ingress</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-fg_dos" data-step="fg_dos"><div class="node-title">DoS Sensor</div><span class="badge lina-badge">SPU</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-fg_integrity" data-step="fg_integrity"><div class="node-title">IP Integrity</div><span class="badge lina-badge">Header</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-fg_ipsec_in" data-step="fg_ipsec_in"><div class="node-title">IPsec Decrypt</div><span class="badge lina-badge">VPN</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-fg_dnat" data-step="fg_dnat"><div class="node-title">NAT (DNAT) / VIP</div><span class="badge lina-badge">VIP</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-fg_routing_in" data-step="fg_routing_in"><div class="node-title">Routing Lookup</div><span class="badge lina-badge">Route</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-fg_tcp_sanity" data-step="fg_tcp_sanity"><div class="node-title">TCP State Sanity Check</div><span class="badge lina-badge">L4 Validation</span></div>
+                                </div>
+
+                                <div class="fg-fastpath-bypass-connector">
+                                    <span class="bypass-label">NP7 Fastpath Session Bypass</span>
+                                    <span class="bypass-arrow">↓</span>
+                                </div>
+
+                                <div class="fg-bypass-wrapper" style="position: relative; display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                                    <div class="pipeline-section-title">Stateful Engine Fork</div>
+                                    <div class="pipeline-connector-down fg-connector">Stateful Inspection Engine Fork</div>
+                                    
+                                    <div class="pipeline-grid" style="justify-content: center;">
+                                        <div class="node decision" id="node-fg_session_lookup" data-step="fg_session_lookup"><div class="node-title">Session Lookup</div><span class="badge lina-badge">Match Found?</span></div>
+                                    </div>
+                                    
+                                    <div class="pipeline-connector-down fg-connector fg-fastpath-bypass-arrow">Slow Path (Session Setup) Flow</div>
+                                    <div class="pipeline-grid">
+                                        <div class="node" id="node-fg_session_helpers" data-step="fg_session_helpers"><div class="node-title">Session Helpers</div><span class="badge lina-badge">Helpers</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-fg_auth" data-step="fg_auth"><div class="node-title">Authentication</div><span class="badge lina-badge">FSSO/Auth</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-fg_mgmt" data-step="fg_mgmt"><div class="node-title">Local Mgmt Traffic</div><span class="badge lina-badge">System Check</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-fg_policy" data-step="fg_policy"><div class="node-title">Firewall Policy Lookup</div><span class="badge lina-badge">Firewall Rule</span></div>
+                                    </div>
+                                    
+                                    <div class="pipeline-section-title">SSL Inspection Gateway</div>
+                                    <div class="pipeline-connector-down fg-connector fg-fastpath-bypass-arrow">SSL Inspection Gateway</div>
+                                    <div class="pipeline-grid" style="justify-content: center;">
+                                        <div class="node decision" id="node-fg_ssl_check" data-step="fg_ssl_check"><div class="node-title">Deep Inspection Profile</div><span class="badge lina-badge">Gateway</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-fg_ssl_decrypt" data-step="fg_ssl_decrypt"><div class="node-title">SSL Decrypt</div><span class="badge lina-badge">SPU CP9</span></div>
+                                    </div>
+                                </div>
+
+                                <div class="pipeline-connector-down fg-connector fg-fastpath-bypass-arrow">UTM Profile Inspection Splits</div>
+                                
+                                <div class="pipeline-swimlanes">
+                                    <div class="swimlane-branch">
+                                        <div class="swimlane-title">Flow-Based Inspection Engine</div>
+                                        <div class="pipeline-grid">
+                                            <div class="node decision" id="node-fg_sec_decision" data-step="fg_sec_decision"><div class="node-title">Security Profile Check</div><span class="badge fg-badge">UTM Check</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-fg_ips" data-step="fg_ips"><div class="node-title">IPS Engine</div><span class="badge fg-badge">IPS Profile</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-fg_app_ctrl" data-step="fg_app_ctrl"><div class="node-title">Application Ctrl</div><span class="badge fg-badge">App ID</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-fg_av_flow" data-step="fg_av_flow"><div class="node-title">Flow AV</div><span class="badge fg-badge">Malware</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-fg_wf_flow" data-step="fg_wf_flow"><div class="node-title">Flow WebFilter</div><span class="badge fg-badge">URL Reputation</span></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="swimlane-branch">
+                                        <div class="swimlane-title">Proxy-Based Inspection Engine</div>
+                                        <div class="pipeline-grid">
+                                            <div class="node decision" id="node-fg_proxy_decision" data-step="fg_proxy_decision"><div class="node-title">Proxy Required?</div><span class="badge fg-badge">Buffering</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-fg_voip" data-step="fg_voip"><div class="node-title">VoIP Inspection</div><span class="badge fg-badge">SIP Proxy</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-fg_dlp" data-step="fg_dlp"><div class="node-title">DLP Scan</div><span class="badge fg-badge">Data Leak</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-fg_email" data-step="fg_email"><div class="node-title">Email Filter</div><span class="badge fg-badge">Spam Blocker</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-fg_av_proxy" data-step="fg_av_proxy"><div class="node-title">Proxy AV</div><span class="badge fg-badge">Buffered Scan</span></div>
+                                            <div class="node-arrow">→</div>
+                                            <div class="node" id="node-fg_icap" data-step="fg_icap"><div class="node-title">ICAP Server</div><span class="badge fg-badge">Offload</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="pipeline-section-title">Egress Packet Flow</div>
+                                <div class="pipeline-connector-down fg-connector">Egress Packet Flow (Reordered)</div>
+                                <div class="pipeline-grid">
+                                    <div class="node" id="node-fg_ssl_encrypt" data-step="fg_ssl_encrypt"><div class="node-title">SSL Re-encrypt</div><span class="badge lina-badge">Gateway</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-fg_snat" data-step="fg_snat"><div class="node-title">NAT (SNAT)</div><span class="badge lina-badge">PAT Source</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-fg_ipsec_out" data-step="fg_ipsec_out"><div class="node-title">IPsec Encrypt</div><span class="badge lina-badge">VPN</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-fg_shaping" data-step="fg_shaping"><div class="node-title">Traffic Shaping</div><span class="badge lina-badge">QoS</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node" id="node-fg_egress" data-step="fg_egress"><div class="node-title">Interface (TX)</div><span class="badge lina-badge">Egress Cable</span></div>
+                                </div>
+                            </div>
+
+                            <!-- 4. Check Point SecureXL / CoreXL Flow (R80+ v1.7) -->
+                            <div id="brand-flow-checkpoint" class="brand-flow-layout">
+                                <div class="pipeline-section-title">SND Ingress & Link Layer Acceleration</div>
+                                <div class="pipeline-grid">
+                                    <div class="node" id="node-cp_nic_in" data-step="cp_nic_in"><div class="node-title">NIC In</div><span class="badge lina-badge">eth0</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node decision" id="node-cp_snd_decrypt" data-step="cp_snd_decrypt"><div class="node-title">SND Decrypt?</div><span class="badge lina-badge">VPN Check</span></div>
+                                    <div class="node-arrow">→</div>
+                                    <div class="node decision" id="node-cp_snd_qos" data-step="cp_snd_qos"><div class="node-title">SND QoS?</div><span class="badge lina-badge">QoS Classify</span></div>
+                                </div>
+                                
+                                <div class="pipeline-section-title">SecureXL Acceleration Driver</div>
+                                <div class="pipeline-grid" style="justify-content: center; margin-top: 0.4rem;">
+                                    <div class="node decision" id="node-cp_sxl_router" data-step="cp_sxl_router"><div class="node-title">SecureXL Driver</div><span class="badge cp-badge">Router</span></div>
+                                </div>
+
+                                <div cla                                <div class="cp-bypass-wrapper" style="position: relative; display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                                    <div class="pipeline-swimlanes check-point-swimlanes">
+                                        <div class="swimlane-branch">
+                                            <div class="swimlane-title">Fast Path (Bypasses Slowpath & UTM)</div>
+                                            <div class="pipeline-grid">
+                                                <div class="node" id="node-cp_sxl_fastpath" data-step="cp_sxl_fastpath"><div class="node-title">Template Hit</div><span class="badge cp-badge">SecureXL</span></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="swimlane-branch">
+                                            <div class="swimlane-title">Medium Path (PXL - Buffers to CMI Blades)</div>
+                                            <div class="pipeline-grid">
+                                                <div class="node" id="node-cp_sxl_pxl" data-step="cp_sxl_pxl"><div class="node-title">PSL Stream</div><span class="badge cp-badge">SecureXL</span></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="swimlane-branch">
+                                            <div class="swimlane-title">Slow Path (F2F - CoreXL Kernels)</div>
+                                            <div class="pipeline-grid">
+                                                <div class="node" id="node-cp_sxl_f2f" data-step="cp_sxl_f2f"><div class="node-title">F2F Path</div><span class="badge cp-badge">SecureXL</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="pipeline-section-title">CoreXL Inbound Chains</div>
+                                    <div class="pipeline-grid">
+                                        <div class="node" id="node-cp_f2f_conn_table" data-step="cp_f2f_conn_table"><div class="node-title">F2F Session Hit?</div><span class="badge lina-badge">Conn Table</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node decision" id="node-cp_f2f_nat_dest" data-step="cp_f2f_nat_dest"><div class="node-title">NAT (Dest)? [DNAT]</div><span class="badge lina-badge">Inbound</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node decision" id="node-cp_f2f_policy" data-step="cp_f2f_policy"><div class="node-title">Firewall Policy [Access]</div><span class="badge lina-badge">Rulebase</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-cp_f2f_in_modules" data-step="cp_f2f_in_modules"><div class="node-title">In-Chain Mods</div><span class="badge lina-badge">VM Kernel</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node decision" id="node-cp_f2f_content_check" data-step="cp_f2f_content_check"><div class="node-title">Content Scan?</div><span class="badge lina-badge">Redirect</span></div>
+                                    </div>
+
+                                    <div class="pipeline-connector-down cp-connector">Check Point CMI Engine Matrix</div>
+                                    <div class="parallel-card-wrapper">
+                                        <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: center; width: 100%;">
+                                            <div class="pipeline-grid" style="justify-content: center; gap: 0.3rem;">
+                                                <div class="node" id="node-cp_cmi_psl" data-step="cp_cmi_psl"><div class="node-title">PSL Stream Engine</div><span class="badge cp-badge">PSL</span></div>
+                                                <div class="node-arrow">→</div>
+                                                <div class="node" id="node-cp_cmi_modules" data-step="cp_cmi_modules"><div class="node-title">CMI Blades Loader</div><span class="badge cp-badge">CMI</span></div>
+                                                <div class="node-arrow">→</div>
+                                                <div class="node" id="node-cp_cmi_https_decrypt" data-step="cp_cmi_https_decrypt"><div class="node-title">HTTPS Decrypt</div><span class="badge cp-badge">SSL Decrypt</span></div>
+                                                <div class="node-arrow">→</div>
+                                                <div class="node" id="node-cp_cmi_l7_app" data-step="cp_cmi_l7_app"><div class="node-title">L7 App Control</div><span class="badge cp-badge">AppControl</span></div>
+                                                <div class="node-arrow">→</div>
+                                                <div class="node" id="node-cp_cmi_url" data-step="cp_cmi_url"><div class="node-title">URL Filtering</div><span class="badge cp-badge">URLFilter</span></div>
+                                            </div>
+                                            <div class="node-arrow" style="margin: 0; font-size: 0.8rem; line-height: 1;">↓</div>
+                                            <div class="pipeline-grid" style="justify-content: center; gap: 0.3rem;">
+                                                <div class="node" id="node-cp_cmi_ips" data-step="cp_cmi_ips"><div class="node-title">IPS Engine</div><span class="badge cp-badge">IPS</span></div>
+                                                <div class="node-arrow">→</div>
+                                                <div class="node" id="node-cp_cmi_ab_av" data-step="cp_cmi_ab_av"><div class="node-title">Anti-Bot / AV</div><span class="badge cp-badge">AB / AV</span></div>
+                                                <div class="node-arrow">→</div>
+                                                <div class="node" id="node-cp_cmi_threat_emulation" data-step="cp_cmi_threat_emulation"><div class="node-title">Threat Emulation</div><span class="badge cp-badge">Sandbox</span></div>
+                                                <div class="node-arrow">→</div>
+                                                <div class="node" id="node-cp_cmi_https_encrypt" data-step="cp_cmi_https_encrypt"><div class="node-title">HTTPS Encrypt</div><span class="badge cp-badge">SSL Encrypt</span></div>
+                                                <div class="node-arrow">→</div>
+                                                <div class="node decision" id="node-cp_cmi_action" data-step="cp_cmi_action"><div class="node-title">Blades Verdict</div><span class="badge cp-badge">Action</span></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="pipeline-connector-down">Routing & Stateful Egress Outbound</div>
+                                    <div class="pipeline-section-title">Routing & Outbound Kernel</div>
+                                    <div class="pipeline-grid">
+                                        <div class="node" id="node-cp_routing" data-step="cp_routing"><div class="node-title">Routing Lookup</div><span class="badge cp-badge">OS Router</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node decision" id="node-cp_f2f_nat_src" data-step="cp_f2f_nat_src"><div class="node-title">Source NAT?</div><span class="badge cp-badge">Outbound SNAT</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-cp_f2f_out_modules" data-step="cp_f2f_out_modules"><div class="node-title">Out-Chain Mods</div><span class="badge cp-badge">VM Kernel</span></div>
+                                    </div>
+
+                                    <div class="pipeline-connector-down">Path Execution & Egress Driver</div>
+                                    <div class="pipeline-section-title">Path Execution & Outbound Gateway</div>
+                                    <div class="pipeline-grid">
+                                        <div class="node" id="node-cp_path_resolution" data-step="cp_path_resolution"><div class="node-title">Path Resolved</div><span class="badge cp-badge">F2F/PXL/Accel</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node decision" id="node-cp_egress_qos" data-step="cp_egress_qos"><div class="node-title">QoS OUT?</div><span class="badge lina-badge">Bandwidth OUT</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node decision" id="node-cp_egress_encrypt" data-step="cp_egress_encrypt"><div class="node-title">VPN Encrypt?</div><span class="badge lina-badge">ESP Encapsulate</span></div>
+                                        <div class="node-arrow">→</div>
+                                        <div class="node" id="node-cp_nic_out" data-step="cp_nic_out"><div class="node-title">NIC Out</div><span class="badge lina-badge">eth1</span></div>
+                                    </div>
+                                    <!-- 3 distinct tracks for Check Point multipath -->
+                                    <div class="cp-multipath-connectors-wrapper">
+                                        <div class="cp-connector-track cp-fastpath-track"><span class="connector-arrow">↓ Fast Path</span></div>
+                                        <div class="cp-connector-track cp-mediumpath-track"><span class="connector-arrow">↓ Medium Path</span></div>
+                                        <div class="cp-connector-track cp-slowpath-track"><span class="connector-arrow">↓ Slow Path</span></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Inspection Details Card Only -->
+                <div class="right-workspace-col">
+                    <div class="step-info-card glass-card">
+                        <h3><span class="icon">🔍</span> Inspection Details</h3>
+                        <div id="step-details-container">
+                            <p class="placeholder-text">Please simulate a packet trace to inspect step details.</p>
+                        </div>
+                        <div class="verdict-banner-container" id="verdict-banner-container">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3: Full Width Terminal Console below both panels -->
+            <section class="console-row-bottom" style="display: none;">
+                <div class="terminal-card glass-card">
+                    <div class="terminal-header">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                        <span class="terminal-title" id="console-terminal-title">Firewall packet-trace console output</span>
+                    </div>
+                    <div class="terminal-body" id="console-logs">
+                        <div class="console-line system">> Firewall traffic visualizer loaded. Select a brand tab and simulate a packet to begin.</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script src="/static/js/app.js?v=3"></script>
+</body>
+</html>

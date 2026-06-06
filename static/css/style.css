@@ -1,0 +1,1939 @@
+:root {
+    --bg-main: #141517;
+    --bg-card: rgba(28, 30, 33, 0.85);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-focus: rgba(38, 143, 255, 0.4);
+    
+    --primary: #3b82f6;
+    --primary-glow: rgba(59, 130, 246, 0.3);
+    --secondary: #10b981;
+    --secondary-glow: rgba(16, 185, 129, 0.3);
+    
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --text-muted: #6b7280;
+
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --cyan: #06b6d4;
+
+    --lina-color: #0ea5e9;
+    --snort-color: #f43f5e;
+    --fg-color: #f97316;       /* FortiGate - Fortinet Orange */
+    --palo-color: #22d3ee;     /* Palo Alto - Cyan/Teal (App-ID) */
+    --cp-color: #a78bfa;       /* Check Point - Purple (Software Blades) */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 14px; /* Global font baseline decreased by 1pt */
+}
+
+body {
+    background-color: var(--bg-main);
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(40, 42, 48, 0.5) 0, transparent 50%),
+        radial-gradient(at 50% 0%, rgba(13, 148, 136, 0.05) 0, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.03) 0, transparent 50%);
+    color: var(--text-primary);
+    font-family: 'Outfit', sans-serif;
+    min-height: 100vh;
+    padding: 1.5rem;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism utility card */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Application Layout */
+.app-container {
+    max-width: 1680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Header */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo-area h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(to right, #60a5fa, #38bdf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.logo-title-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.15rem;
+}
+
+.logo-tagline {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    line-height: 1.35;
+    font-weight: 400;
+    letter-spacing: 0.1px;
+}
+
+.senap-label a:hover {
+    text-decoration: underline !important;
+    opacity: 0.85;
+}
+
+.logo-area .badge {
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    margin-left: 0.5rem;
+    vertical-align: middle;
+    -webkit-text-fill-color: var(--text-secondary); /* Override gradient fill */
+}
+
+.pulse-dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--secondary);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--secondary-glow);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.9); opacity: 0.7; }
+    50% { transform: scale(1.1); opacity: 1; box-shadow: 0 0 15px var(--secondary); }
+    100% { transform: scale(0.9); opacity: 0.7; }
+}
+
+.status-indicator {
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.status-indicator .label {
+    color: var(--text-secondary);
+}
+
+.status-indicator .val.green {
+    color: var(--green);
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+}
+
+/* Workspace Panels */
+.workspace {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Top Config Panel */
+.config-panel {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.config-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.6rem;
+}
+
+.config-panel h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.preset-selector-top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(15, 23, 42, 0.35);
+    padding: 0.5rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+.preset-selector-top:hover {
+    border-color: rgba(148, 163, 184, 0.3);
+    background: rgba(15, 23, 42, 0.5);
+}
+
+.preset-selector-top label {
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.preset-selector-top select {
+    background: #141517;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    padding: 0.35rem 0.5rem;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+/* Dynamic Preset Callout Box */
+.preset-desc-box-container {
+    background: rgba(59, 130, 246, 0.04);
+    border: 1px dashed rgba(59, 130, 246, 0.15);
+    border-radius: 6px;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    margin-bottom: 0.25rem;
+}
+
+.preset-desc-box-container strong {
+    color: var(--text-primary);
+}
+
+.preset-desc-box-container .direction-tag {
+    display: inline-block;
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--amber);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.72rem;
+    margin-left: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+/* 3-Column Form Dashboard Grid with absolute cell separations */
+.horizontal-form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+@media (max-width: 1300px) {
+    .horizontal-form-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .horizontal-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.form-grid-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.options-column {
+    min-width: 150px;
+}
+
+.checkbox-list-stacked {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding-bottom: 2px;
+}
+
+.button-column {
+    min-width: 180px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
+}
+
+.checkbox-item label {
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-primary);
+}
+
+.checkbox-item input {
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
+}
+
+label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    border-color: #3b82f6;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Simulate Button */
+.btn {
+    position: relative;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, var(--primary), #2563eb);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px var(--primary-glow);
+    height: 35px;
+    width: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Workspace Bottom Grid (Pipeline on Left, Details on Right) */
+.workspace-grid-bottom {
+    display: grid;
+    grid-template-columns: 1fr 480px; 
+    gap: 1.5rem;
+    align-items: stretch; /* Make pipeline and details have the exact same height */
+}
+
+@media (max-width: 1100px) {
+    .workspace-grid-bottom {
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+}
+
+.left-workspace-col {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.right-workspace-col {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Canvas styling */
+.visualizer-canvas {
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.canvas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+}
+
+.anim-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.ctrl-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ctrl-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.ctrl-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+#play-pause {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: var(--green);
+    font-weight: 600;
+}
+
+#play-pause.paused {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: var(--amber);
+}
+
+/* Pipeline Flow Layout */
+.pipeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    margin-top: 0;
+    flex-grow: 1; /* Stretch container to fill visualizer canvas height */
+    overflow-x: auto;
+}
+
+.pipeline-section-title {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 0.4rem;
+}
+
+/* Brand-specific section header accent colors */
+.pipeline-section-title.snort-header { color: var(--snort-color); }
+.pipeline-section-title.fg-header { color: var(--fg-color); }
+.pipeline-section-title.palo-header { color: var(--palo-color); }
+.pipeline-section-title.cp-header { color: var(--cp-color); }
+
+/* Brand-specific connector colors */
+.pipeline-connector-down.snort-connector { color: var(--snort-color); border-color: rgba(244, 63, 94, 0.25); }
+.pipeline-connector-down.fg-connector { color: var(--fg-color); border-color: rgba(249, 115, 22, 0.25); }
+.pipeline-connector-down.palo-connector { color: var(--palo-color); border-color: rgba(34, 211, 238, 0.25); }
+.pipeline-connector-down.cp-connector { color: var(--cp-color); border-color: rgba(167, 139, 250, 0.25); }
+
+.pipeline-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+/* Interactive Pipeline Nodes */
+.node {
+    background: rgba(20, 21, 23, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.5rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    min-width: 85px;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.node:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(30, 31, 35, 0.9);
+    transform: translateY(-1px);
+}
+
+.node.decision {
+    border-radius: 4px;
+    border-style: dashed;
+}
+
+.node-title {
+    margin-bottom: 0.2rem;
+}
+
+.badge {
+    font-size: 0.5rem;
+    padding: 1px 3px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+.badge.lina-badge {
+    background: rgba(14, 165, 233, 0.15);
+    color: var(--lina-color);
+}
+
+.badge.snort-badge {
+    background: rgba(244, 63, 94, 0.15);
+    color: var(--snort-color);
+}
+
+/* FortiGate UTM/Proxy Engine badge */
+.badge.fg-badge {
+    background: rgba(249, 115, 22, 0.15);
+    color: var(--fg-color);
+}
+
+/* Palo Alto App-ID / Content-ID badge */
+.badge.palo-badge {
+    background: rgba(34, 211, 238, 0.15);
+    color: var(--palo-color);
+}
+
+/* Check Point CMI Blades badge */
+.badge.cp-badge {
+    background: rgba(167, 139, 250, 0.15);
+    color: var(--cp-color);
+}
+
+.node-arrow {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    user-select: none;
+}
+
+.pipeline-connector-down {
+    text-align: center;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    padding: 2px 0;
+    border-left: 2px dashed rgba(255, 255, 255, 0.08);
+    margin-left: 42px;
+    position: relative;
+}
+
+.pipeline-connector-down::before {
+    content: '↓';
+    position: absolute;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+}
+
+/* Active Highlight Status Classes */
+.node.active {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    border-color: var(--primary);
+    background: rgba(59, 130, 246, 0.15);
+    transform: scale(1.03);
+}
+
+.node.pass {
+    border-color: var(--green);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.node.fail {
+    border-color: var(--red);
+    background: rgba(239, 68, 68, 0.15);
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+}
+
+.node.nat {
+    border-color: var(--cyan);
+    background: rgba(6, 182, 212, 0.1);
+}
+
+.node.decrypt {
+    border-color: #eab308;
+    background: rgba(234, 179, 8, 0.1);
+}
+
+.node.bypass {
+    border-color: var(--text-muted);
+    background: rgba(107, 114, 128, 0.1);
+}
+
+/* Step Info Card (Inspection Details) */
+.step-info-card {
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.step-info-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+.info-sub-header {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 0.8rem;
+    margin-bottom: 0.2rem;
+    letter-spacing: 0.5px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+    padding-bottom: 2px;
+}
+
+/* Verdict Banners */
+.verdict-banner-container {
+    margin-top: 3.5rem;
+    margin-bottom: 0.8rem;
+}
+
+.verdict-banner {
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.85rem;
+    text-align: center;
+    border: 1px solid transparent;
+}
+
+.verdict-banner.allow {
+    background: rgba(16, 185, 129, 0.15);
+    border-color: var(--green);
+    color: var(--green);
+    text-shadow: 0 0 8px rgba(16, 185, 129, 0.3);
+}
+
+.verdict-banner.drop {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: var(--red);
+    color: var(--red);
+    text-shadow: 0 0 8px rgba(239, 68, 68, 0.3);
+}
+
+.details-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+/* Grouped inspection detail boxes */
+.details-box {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 0.8rem 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: border-color 0.2s ease;
+}
+.details-box:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.details-box .details-step-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.1rem;
+}
+.details-box .details-explanation-box {
+    border-left-color: var(--primary);
+    margin: 0;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.82rem;
+}
+.details-box .verdict-badge-step {
+    margin: 0.2rem 0 0 0;
+    align-self: flex-start;
+}
+.details-box .info-sub-header {
+    margin-top: 0;
+    margin-bottom: 0.3rem;
+    font-size: 0.7rem;
+}
+.details-box .details-desc {
+    font-size: 0.82rem;
+}
+.details-box .cli-log-line {
+    margin: 0;
+    font-size: 0.65rem;
+    padding: 0.45rem 0.6rem;
+}
+
+.details-step-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.details-desc {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--text-primary);
+}
+
+/* Concept Guide Box without "Concept Guide" Header text, directly beneath heading */
+.details-explanation-box {
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 3px solid var(--primary);
+    padding: 0.6rem 0.8rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #e5e7eb;
+    line-height: 1.45;
+    font-style: normal;
+    margin-bottom: 0.4rem;
+}
+
+.details-meta {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    padding: 0.6rem;
+    border-radius: 6px;
+    font-size: 0.78rem;
+    margin-top: auto; /* Push metadata block cleanly to the bottom of the card */
+}
+
+.meta-row {
+    margin-bottom: 0.35rem;
+    color: var(--text-secondary);
+}
+
+.meta-row:last-child {
+    margin-bottom: 0;
+}
+
+.meta-row strong {
+    color: var(--text-primary);
+}
+
+.placeholder-text {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+/* Terminal Console (Spanning Full Bottom Width) */
+.console-row-bottom {
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.terminal-card {
+    padding: 1.25rem;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0.75rem;
+}
+
+.terminal-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.terminal-dot.red { background-color: var(--red); }
+.terminal-dot.yellow { background-color: var(--amber); }
+.terminal-dot.green { background-color: var(--green); }
+
+.terminal-title {
+    font-family: 'Fira Code', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-left: 0.5rem;
+}
+
+.terminal-body {
+    background: #0d0e10;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    flex: 1;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.78rem;
+    padding: 0.75rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    max-height: 140px;
+}
+
+.console-line {
+    color: var(--text-secondary);
+    line-height: 1.4;
+    word-break: break-all;
+}
+
+.console-line.system {
+    color: var(--primary);
+}
+
+.console-line.cmd {
+    color: var(--cyan);
+}
+
+.console-line.success {
+    color: var(--green);
+}
+
+.console-line.danger {
+    color: var(--red);
+}
+
+/* Brand Selector Tabs & Toggles */
+.brand-tabs-container {
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.brand-tab {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.brand-tab:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.brand-tab.active {
+    color: var(--text-primary);
+    background: rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 12px rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Brand-flow Layout Toggle */
+.brand-flow-layout {
+    display: none;
+}
+
+.brand-flow-layout.active {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Split Config Panel Layout */
+.split-panel {
+    display: grid;
+    grid-template-columns: 1fr 480px;
+    gap: 1.5rem;
+    padding: 1.25rem !important;
+}
+
+.config-split-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    border-right: 1px solid var(--border-color);
+    padding-right: 1.25rem;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.config-split-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    justify-content: space-between;
+    height: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.config-action-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: auto; /* Push to the very bottom */
+    padding-top: 0.8rem;
+    border-top: 1px solid var(--border-color);
+    height: 50px;
+}
+
+/* Config Sub-Tabs */
+.config-sub-tabs-container {
+    display: flex;
+    gap: 0.4rem;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 3px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    align-self: flex-start;
+    width: auto;
+    margin-bottom: 0.2rem;
+}
+
+.sub-tab {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.35rem 0.8rem;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.sub-tab:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.sub-tab.active {
+    color: var(--text-primary);
+    background: rgba(168, 85, 247, 0.2); /* elegant purple sub-tabs */
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    box-shadow: 0 0 8px rgba(168, 85, 247, 0.15);
+}
+
+/* Sub-Tab Contents */
+.sub-tab-content {
+    display: none;
+    width: 100%;
+}
+
+.sub-tab-content.active {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Textarea styling */
+.debug-textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    flex: 1;
+    min-height: 110px;
+    background: #0d0e10;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-size: 0.78rem;
+    padding: 0.6rem;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.debug-textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.25);
+}
+
+.debug-attach-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    flex: 1;
+    height: 100%;
+}
+
+.debug-label {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+/* Guides Styles */
+.guide-header h2 {
+    font-size: 1rem;
+    color: var(--primary);
+    margin-bottom: 0.2rem;
+}
+
+.guide-intro {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.6rem;
+}
+
+.guide-box {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 0.6rem;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.72rem;
+    color: #e5e7eb;
+    white-space: pre-wrap;
+    max-height: 130px;
+    overflow-y: auto;
+}
+
+/* REFACTORED STATEFUL MULTI-PATH PIPELINE VISUALS */
+.pipeline-swimlanes {
+    display: flex;
+    gap: 1rem;
+    margin: 0.5rem 0;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.swimlane-branch {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 8px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    transition: all 0.4s ease;
+}
+
+.swimlane-title {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    padding-bottom: 0.2rem;
+    margin-bottom: 0.2rem;
+}
+
+/* Parallel Scan Grid Bounding Cards */
+.parallel-card-wrapper {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 0.6rem;
+    margin: 0.5rem 0;
+    width: 100%;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+.parallel-card-title {
+    font-size: 0.7rem;
+    color: #0891b2;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.parallel-card-title::before {
+    content: "⚡";
+}
+
+.parallel-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Grayed/Bypassed Disabled Node Styles */
+.node.node-disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    background: rgba(10, 10, 12, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.03) !important;
+    color: var(--text-muted) !important;
+}
+
+.node.node-disabled .badge {
+    background: rgba(255, 255, 255, 0.02) !important;
+    color: var(--text-muted) !important;
+}
+
+/* Premium Verdict badges inside step details */
+.verdict-badge-step {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin: 0.3rem 0;
+}
+
+.verdict-badge-step.allowed {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--green);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.verdict-badge-step.dropped {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--red);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.verdict-badge-step.inspecting {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--amber);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.verdict-badge-step.fastpath {
+    background: rgba(34, 211, 238, 0.15);
+    color: var(--cyan);
+    border: 1px solid rgba(34, 211, 238, 0.25);
+}
+
+/* Mock CLI Log Line Pre-Box */
+.cli-log-line {
+    background: #0f1012;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+    padding: 0.5rem;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.68rem;
+    color: #38bdf8;
+    overflow-x: auto;
+    white-space: pre;
+    margin: 0.3rem 0 0.6rem 0;
+}
+
+/* ==========================================
+   Premium Light Background Canvas with Dark Step Boxes (Swapped)
+   ========================================== */
+.visualizer-canvas.glass-card {
+    background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%) !important;
+    border: 1px solid #475569 !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+    color: #0f172a !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.visualizer-canvas.glass-card:hover {
+    border-color: #334155 !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.4) !important;
+}
+
+.visualizer-canvas #pipeline-title-brand {
+    color: #0f172a !important;
+    font-weight: 800;
+}
+
+/* Control Buttons Light Styling */
+.visualizer-canvas .ctrl-btn {
+    background: rgba(15, 23, 42, 0.08) !important;
+    border: 1px solid rgba(15, 23, 42, 0.25) !important;
+    color: #0f172a !important;
+}
+
+.visualizer-canvas .ctrl-btn:hover:not(:disabled) {
+    background: rgba(15, 23, 42, 0.15) !important;
+    border-color: rgba(15, 23, 42, 0.4) !important;
+    color: #0f172a !important;
+}
+
+.visualizer-canvas .ctrl-btn:disabled {
+    opacity: 0.35 !important;
+}
+
+.visualizer-canvas #play-pause {
+    background: rgba(16, 185, 129, 0.2) !important;
+    border-color: rgba(16, 185, 129, 0.4) !important;
+    color: #047857 !important;
+}
+
+.visualizer-canvas #play-pause.paused {
+    background: rgba(245, 158, 11, 0.2) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+    color: #b45309 !important;
+}
+
+/* Muted Pipeline Container to Reduce Glare */
+.visualizer-canvas .pipeline-container {
+    background: rgba(255, 255, 255, 0.3) !important;
+    border: 1px solid rgba(15, 23, 42, 0.15) !important;
+    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Pipeline Titles & Swimlanes */
+.visualizer-canvas .pipeline-section-title {
+    color: #0f172a !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    font-weight: 800 !important;
+}
+
+.visualizer-canvas .pipeline-section-title.snort-header { color: #991b1b !important; }
+.visualizer-canvas .pipeline-section-title.fg-header { color: #9a3412 !important; }
+.visualizer-canvas .pipeline-section-title.palo-header { color: #0e7490 !important; }
+.visualizer-canvas .pipeline-section-title.cp-header { color: #5b21b6 !important; }
+
+.visualizer-canvas .swimlane-title {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid rgba(15, 23, 42, 0.2) !important;
+}
+
+/* Connectors & Arrows (Centered & Tidied Up) */
+.visualizer-canvas .node-arrow {
+    color: #0f172a !important;
+    font-weight: 900 !important;
+    font-size: 1.25rem !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+}
+
+.visualizer-canvas .pipeline-connector-down {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    align-self: center !important;
+    width: 100% !important;
+    height: 16px !important; /* Ultra-tight vertical spacing! */
+    margin: 0.05rem auto !important; /* Minimal spacing for compact layout */
+    padding: 0 !important;
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    
+    /* Completely hide text descriptions to keep layout clean and minimal */
+    font-size: 0 !important;
+    line-height: 0 !important;
+    color: transparent !important;
+    text-shadow: none !important;
+    position: relative !important;
+}
+
+/* Remove vertical lines to avoid duplicate overlapping clutter */
+.visualizer-canvas .pipeline-connector-down::before {
+    display: none !important;
+}
+
+/* Crisp, clean, unblocked pointing downward arrow head on its own */
+.visualizer-canvas .pipeline-connector-down::after {
+    content: '↓' !important;
+    display: block !important;
+    color: #0f172a !important;
+    font-weight: 900 !important;
+    font-size: 1.25rem !important; /* Prominent arrow head */
+    line-height: 1 !important;
+    text-align: center !important;
+    border: none !important; /* NO DASHED OVERLAPS */
+    height: auto !important;
+    width: auto !important;
+    position: static !important;
+    transform: none !important;
+    text-shadow: none !important;
+}
+
+/* Elegant visible swimlane cards on light canvas */
+.visualizer-canvas .swimlane-branch {
+    background: rgba(255, 255, 255, 0.45) !important;
+    border: 1px solid rgba(15, 23, 42, 0.12) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02) !important;
+}
+
+
+/* Interactive Step Boxes: DARK SOLID BOXES on Light Background */
+.visualizer-canvas .node {
+    background: #1e293b !important;
+    border: 1px solid #0f172a !important;
+    color: #f8fafc !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+.visualizer-canvas .node:hover {
+    background: #0f172a !important;
+    border-color: #3b82f6 !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25) !important;
+}
+
+.visualizer-canvas .node.decision {
+    border-style: dashed !important;
+}
+
+.visualizer-canvas .node.decision:not(.pass):not(.fail):not(.nat):not(.decrypt):not(.active):not(.bypass):not(.node-disabled) {
+    border-color: #475569 !important;
+}
+
+.visualizer-canvas .node-title {
+    color: #f8fafc !important;
+    font-weight: 600;
+}
+
+/* Badges inside Dark Nodes — unified dark-background pattern for readability */
+.visualizer-canvas .badge.lina-badge { background: #0f172a !important; color: #38bdf8 !important; padding: 0.18rem 0.35rem !important; border-radius: 3px !important; }
+.visualizer-canvas .badge.snort-badge { background: #0f172a !important; color: #fb7185 !important; padding: 0.18rem 0.35rem !important; border-radius: 3px !important; }
+.visualizer-canvas .badge.fg-badge { background: #0f172a !important; color: #fb923c !important; padding: 0.18rem 0.35rem !important; border-radius: 3px !important; }
+.visualizer-canvas .badge.palo-badge { background: #0f172a !important; color: #22d3ee !important; padding: 0.18rem 0.35rem !important; border-radius: 3px !important; }
+.visualizer-canvas .badge.cp-badge { background: #0f172a !important; color: #c084fc !important; padding: 0.18rem 0.35rem !important; border-radius: 3px !important; }
+
+/* Status Highlights: Rich Vivid Colors on Swapped Layout */
+.visualizer-canvas .node.active {
+    background: #2563eb !important;
+    border-color: #1d4ed8 !important;
+    color: #ffffff !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3), 0 6px 20px rgba(37, 99, 235, 0.4) !important;
+}
+.visualizer-canvas .node.active .node-title {
+    color: #ffffff !important;
+}
+
+.visualizer-canvas .node.pass {
+    background: #15803d !important;
+    border-color: #166534 !important;
+    color: #f0fdf4 !important;
+    box-shadow: 0 4px 10px rgba(21, 128, 61, 0.15) !important;
+}
+.visualizer-canvas .node.pass .node-title {
+    color: #f0fdf4 !important;
+}
+
+.visualizer-canvas .node.fail {
+    background: #b91c1c !important;
+    border-color: #991b1b !important;
+    color: #fef2f2 !important;
+    box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.25), 0 6px 20px rgba(185, 28, 28, 0.3) !important;
+}
+.visualizer-canvas .node.fail .node-title {
+    color: #fef2f2 !important;
+}
+
+.visualizer-canvas .node.nat {
+    background: #0369a1 !important;
+    border-color: #075985 !important;
+    color: #f0f9ff !important;
+}
+.visualizer-canvas .node.nat .node-title {
+    color: #f0f9ff !important;
+}
+
+.visualizer-canvas .node.decrypt {
+    background: #facc15 !important;
+    border-color: #ca8a04 !important;
+    color: #0f172a !important;
+    box-shadow: 0 0 15px rgba(250, 204, 21, 0.4) !important;
+}
+.visualizer-canvas .node.decrypt .node-title {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+.visualizer-canvas .node.decrypt .badge {
+    background: #0f172a !important;
+    color: #facc15 !important;
+    padding: 0.18rem 0.35rem !important;
+    border-radius: 3px !important;
+}
+
+/* ── Uniform skipped node styling — visible diagonal stripe mask ──
+   Applied to both .bypass (explicitly bypassed) and .node-disabled
+   (post-drop / reactivity-disabled) for a completely consistent
+   inactive_skipped visual state machine.
+   Dark text on light stripe ensures full readability. */
+.visualizer-canvas .node.bypass,
+.visualizer-canvas .node.node-disabled {
+    background: repeating-linear-gradient(45deg, #cbd5e1, #cbd5e1 8px, #94a3b8 8px, #94a3b8 16px) !important;
+    border: 1.5px dashed #475569 !important;
+    color: #1e293b !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+}
+.visualizer-canvas .node.bypass .node-title,
+.visualizer-canvas .node.node-disabled .node-title {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+.visualizer-canvas .node.bypass .badge,
+.visualizer-canvas .node.node-disabled .badge {
+    background: rgba(15, 23, 42, 0.12) !important;
+    color: #0f172a !important;
+    padding: 0.18rem 0.35rem !important;
+    border-radius: 3px !important;
+}
+
+/* ==========================================
+   CONDITIONAL NON-LINEAR ROUTING STYLES
+   ========================================== */
+
+/* Keyframe for glowing effect */
+@keyframes bypass-pulse {
+    0% { filter: drop-shadow(0 0 2px rgba(59, 130, 246, 0.4)); }
+    100% { filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.8)); }
+}
+
+/* 1. FortiGate Bypass Line (NP7 SPU Orange) — routes from ingress row down the right margin */
+#brand-flow-fortigate {
+    position: relative;
+}
+.fg-fastpath-bypass-connector {
+    position: absolute;
+    right: 6%;
+    top: 0;
+    bottom: 5px;
+    width: 76px;
+    border: 3px dashed var(--fg-color);
+    border-left: none;
+    border-radius: 0 20px 20px 0;
+    pointer-events: none;
+    display: none;
+    z-index: 10;
+}
+
+#brand-flow-fortigate.fg-fastpath-active .fg-fastpath-bypass-connector {
+    display: block;
+    opacity: 0.5;
+    animation: bypass-pulse 1.5s infinite alternate;
+}
+
+.fg-fastpath-bypass-connector .bypass-label {
+    top: calc(50% + 5px);
+}
+
+/* 2. Palo Alto Bypass Line (SP3 Cyan) */
+.pa-fastpath-bypass-connector {
+    position: absolute;
+    right: 12%;
+    left: auto;
+    top: 40px; /* middle of SSL decrypt */
+    bottom: 50px; /* middle of Stage 5 Parallel Scan */
+    width: 3px;
+    border-right: 3px dashed var(--palo-color);
+    pointer-events: none;
+    display: none;
+    z-index: 10;
+}
+
+#brand-flow-paloalto.pa-fastpath-active .pa-fastpath-bypass-connector {
+    display: block;
+    opacity: 0.5;
+    animation: bypass-pulse 1.5s infinite alternate;
+}
+
+/* 3. Cisco FTD Bypass Line (LINA Blue) */
+.cisco-fastpath-bypass-connector {
+    position: absolute;
+    right: calc(12% - 5px);
+    top: 40px; /* middle of L3/L4 ACL */
+    bottom: 25px; /* middle of Flow Update */
+    width: 60px;
+    border: 3px dashed var(--lina-color);
+    border-left: none;
+    border-radius: 0 24px 24px 0;
+    pointer-events: none;
+    display: none;
+    z-index: 10;
+}
+
+#brand-flow-cisco.cisco-fastpath-active .cisco-fastpath-bypass-connector {
+    display: block;
+    opacity: 0.5;
+    animation: bypass-pulse 1.5s infinite alternate;
+}
+
+/* Labels for bypass lines */
+.bypass-label {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%) rotate(90deg);
+    transform-origin: center right;
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ffffff;
+    background: #0f172a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid currentColor;
+    white-space: nowrap;
+}
+
+.pa-fastpath-bypass-connector .bypass-label {
+    right: 8px;
+    left: auto;
+    transform: translateY(-50%) rotate(90deg);
+    transform-origin: center right;
+}
+
+.bypass-arrow {
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: inherit;
+    line-height: 1;
+}
+
+.pa-fastpath-bypass-connector .bypass-arrow {
+    left: auto;
+    right: -7px;
+}
+
+/* 4. Check Point Multipath Connectors */
+.cp-multipath-connectors-wrapper {
+    position: absolute;
+    top: 60px; /* immediately below Stage 2 swimlanes */
+    bottom: 25px; /* down to Stage 6 */
+    left: 0;
+    right: 0;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.cp-connector-track {
+    position: absolute;
+    width: 3px;
+    border-left: 3px dashed #a78bfa;
+    opacity: 0.15;
+    transition: opacity 0.5s ease, border-color 0.5s ease;
+}
+
+.cp-connector-track .connector-arrow {
+    position: absolute;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #1e293b;
+    color: #a78bfa;
+    padding: 1px 6px;
+    border-radius: 4px;
+    border: 1px solid #a78bfa;
+    white-space: nowrap;
+    opacity: 0.7;
+    transition: opacity 0.5s ease;
+}
+
+/* Track 1: Fast Path (Left Swimlane to Stage 6) */
+.cp-fastpath-track {
+    left: 10%;
+    top: 0;
+    bottom: 0;
+    border-left-color: #10b981; /* Green for Fastpath */
+}
+
+.cp-fastpath-track .connector-arrow {
+    top: calc(30% + 20px);
+    left: 8px;
+    color: #10b981;
+    border-color: #10b981;
+}
+
+/* Track 2: Medium Path (Middle Swimlane to Stage 5) */
+.cp-mediumpath-track {
+    left: 45%;
+    top: 0;
+    bottom: 120px; /* Stop at CMI Matrix */
+    border-left-color: #a78bfa; /* Purple for PXL */
+}
+
+.cp-mediumpath-track .connector-arrow {
+    top: 40%;
+    left: 8px;
+    color: #a78bfa;
+    border-color: #a78bfa;
+}
+
+/* Track 3: Slow Path (Right Swimlane to Stage 3) */
+.cp-slowpath-track {
+    left: 80%;
+    top: 5px;
+    bottom: 485px; /* Stop at Stage 3 Inbound Chains */
+    border-left-color: #ef4444; /* Red for Slow F2F */
+}
+
+.cp-slowpath-track .connector-arrow {
+    top: 24px;
+    left: 8px;
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+/* Highlighting Active Tracks in Check Point */
+#brand-flow-checkpoint.cp-fastpath-active .cp-fastpath-track {
+    opacity: 0.5;
+    border-left-style: solid;
+    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8));
+    border-left-width: 4px;
+}
+#brand-flow-checkpoint.cp-fastpath-active .cp-fastpath-track .connector-arrow {
+    opacity: 1;
+    background: #10b981;
+    color: #ffffff;
+}
+
+#brand-flow-checkpoint.cp-pxl-active .cp-mediumpath-track {
+    opacity: 0.5;
+    border-left-style: solid;
+    filter: drop-shadow(0 0 8px rgba(167, 139, 250, 0.8));
+    border-left-width: 4px;
+}
+#brand-flow-checkpoint.cp-pxl-active .cp-mediumpath-track .connector-arrow {
+    opacity: 1;
+    background: #a78bfa;
+    color: #ffffff;
+}
+
+#brand-flow-checkpoint.cp-slowpath-active .cp-slowpath-track {
+    opacity: 0.5;
+    border-left-style: solid;
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8));
+    border-left-width: 4px;
+}
+#brand-flow-checkpoint.cp-slowpath-active .cp-slowpath-track .connector-arrow {
+    opacity: 1;
+    background: #ef4444;
+    color: #ffffff;
+}
+
+/* ====================================================
+   Packets Metadata Context — Read-Only Token Display
+   ==================================================== */
+.metadata-context-block {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+}
+
+.metadata-context-title {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.metadata-context-title .icon {
+    font-size: 0.8rem;
+}
+
+.metadata-token-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .metadata-token-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.metadata-token {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    padding: 0.4rem 0.6rem;
+    transition: border-color 0.3s ease;
+}
+
+.metadata-token:hover {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.metadata-token-label {
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    line-height: 1;
+}
+
+.metadata-token-value {
+    font-size: 0.88rem;
+    color: var(--text-primary);
+    font-family: 'Fira Code', monospace;
+    font-weight: 500;
+    letter-spacing: -0.2px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ====================================================
+   Policy Verdict Segmented Control
+   ==================================================== */
+.verdict-segmented-control {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 3px;
+    width: fit-content;
+}
+
+.verdict-seg-btn {
+    position: relative;
+    padding: 0.4rem 1rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: inherit;
+    min-width: 110px;
+    text-align: center;
+}
+
+.verdict-seg-btn:hover {
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.verdict-seg-btn.active-allow {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.15), inset 0 0 8px rgba(16, 185, 129, 0.05);
+}
+
+.verdict-seg-btn.active-deny {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.3);
+    box-shadow: 0 0 12px rgba(239, 68, 68, 0.15), inset 0 0 8px rgba(239, 68, 68, 0.05);
+}
+
+/* Verdict + Metadata row layout */
+.scenario-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.scenario-controls-row .verdict-segmented-control {
+    flex-shrink: 0;
+}
+
+/* Override mode indicator badge */
+.override-mode-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: rgba(245, 158, 11, 0.12);
+    color: var(--amber);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    animation: overridePulse 2s infinite;
+}
+
+@keyframes overridePulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; box-shadow: 0 0 8px rgba(245, 158, 11, 0.3); }
+}
+
+/* ====================================================
+   Metadata Context Sleek Horizontal Bar
+   ==================================================== */
+.metadata-context-bar {
+    margin-top: 0.6rem;
+    padding: 0.5rem 0.8rem;
+    background: rgba(0, 168, 255, 0.08);
+    border-left: 3px solid var(--accent-light);
+    border-radius: 4px;
+    font-size: 0.82rem;
+    font-family: 'Fira Code', monospace;
+    color: var(--accent-light);
+    overflow: auto;
+    text-overflow: clip;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    line-height: 1.35;
+    text-shadow: 0 0 8px rgba(0, 168, 255, 0.3);
+    border: 1px solid rgba(0, 168, 255, 0.15);
+    border-left-width: 3px;
+    transition: all 0.3s ease;
+}
+
+/* Pipeline-silver-accent select dropdowns — obviously clickable, classy */
+.classy-select {
+    flex: 1;
+    min-width: 150px;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border: 1.5px solid #64748b;
+    color: #f1f5f9;
+    padding: 0.6rem 2.4rem 0.6rem 0.9rem;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.classy-select:hover {
+    border-color: #94a3b8;
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(148, 163, 184, 0.15);
+    transform: translateY(-1px);
+}
+
+.classy-select:focus {
+    outline: none;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(203, 213, 225, 0.25);
+}
+
+/* Dropdown option styling */
+.classy-select option {
+    background: #0f172a;
+    color: #e2e8f0;
+    font-weight: 500;
+    padding: 6px 10px;
+}
+
+/* Dynamic Animation Utility Classes */
+.opacity-20 {
+    opacity: 0.2 !important;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+
+
+
