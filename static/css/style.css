@@ -1933,7 +1933,337 @@ select:focus {
     display: none !important;
 }
 
+/* ============================================================
+   RESPONSIVE: Tablet (max-width: 1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+    .split-panel {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 
+    .config-split-left {
+        border-right: none;
+        padding-right: 0;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border-color);
+    }
 
+    .config-split-right {
+        padding-top: 0.25rem;
+    }
 
+    .config-sub-tabs-container {
+        flex-wrap: wrap;
+    }
+}
 
+/* ============================================================
+   RESPONSIVE: Mobile (max-width: 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+    body {
+        padding: 0.75rem;
+    }
+
+    .app-container {
+        gap: 1rem;
+    }
+
+    /* Header - stack vertically */
+    .app-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+        padding-bottom: 0.6rem;
+    }
+
+    .logo-area {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .logo-tagline {
+        display: none;
+    }
+
+    .logo-area h1 {
+        font-size: 1.35rem;
+    }
+
+    .pulse-dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .status-indicator {
+        width: 100%;
+        justify-content: flex-start;
+        font-size: 0.78rem;
+    }
+
+    /* Brand tabs - wrap */
+    .brand-tabs-container {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 0.3rem;
+        padding: 3px;
+    }
+
+    .brand-tab {
+        flex: 1 1 auto;
+        min-width: 70px;
+        padding: 0.35rem 0.5rem;
+        font-size: 0.75rem;
+        text-align: center;
+    }
+
+    /* Config panel */
+    .config-split-left,
+    .config-split-right {
+        gap: 0.5rem;
+    }
+
+    .selector-row {
+        flex-direction: column;
+        gap: 0.25rem;
+        align-items: flex-start;
+    }
+
+    .selector-row label {
+        min-width: unset !important;
+    }
+
+    .classy-select {
+        width: 100%;
+        font-size: 0.82rem;
+        padding: 0.5rem 2rem 0.5rem 0.6rem;
+    }
+
+    .config-sub-tabs-container {
+        flex-wrap: wrap;
+        width: 100%;
+    }
+
+    .sub-tab {
+        flex: 1 1 auto;
+        padding: 0.3rem 0.5rem;
+        font-size: 0.72rem;
+        text-align: center;
+    }
+
+    /* Metadata tokens */
+    .metadata-token-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.35rem;
+    }
+
+    .metadata-token {
+        padding: 0.3rem 0.45rem;
+    }
+
+    .metadata-token-value {
+        font-size: 0.78rem;
+    }
+
+    .metadata-context-block {
+        padding: 0.5rem 0.6rem;
+    }
+
+    .metadata-context-bar {
+        font-size: 0.72rem;
+        padding: 0.4rem 0.5rem;
+    }
+
+    /* Debug textarea */
+    .debug-textarea {
+        min-height: 80px;
+        font-size: 0.72rem;
+        padding: 0.5rem;
+    }
+
+    /* Guide box */
+    .guide-box {
+        max-height: 100px;
+        font-size: 0.65rem;
+    }
+
+    .config-header h2 {
+        font-size: 1rem;
+    }
+
+    /* Workspace bottom grid - already single column at 1100px */
+    .workspace {
+        gap: 1rem;
+    }
+
+    /* Visualizer canvas */
+    .visualizer-canvas {
+        padding: 0.75rem;
+    }
+
+    .pipeline-container {
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+
+    /* Pipeline nodes */
+    .pipeline-grid {
+        gap: 0.25rem;
+    }
+
+    .node {
+        min-width: 58px;
+        padding: 0.35rem 0.45rem;
+        font-size: 0.68rem;
+    }
+
+    .node-title {
+        font-size: 0.65rem;
+        margin-bottom: 0.1rem;
+    }
+
+    .badge {
+        font-size: 0.45rem;
+    }
+
+    .node-arrow {
+        font-size: 0.6rem;
+    }
+
+    .pipeline-section-title {
+        font-size: 0.62rem;
+    }
+
+    .swimlane-title {
+        font-size: 0.58rem;
+    }
+
+    .pipeline-swimlanes {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .parallel-card-wrapper {
+        padding: 0.4rem;
+    }
+
+    .parallel-grid {
+        gap: 0.25rem;
+    }
+
+    /* Hide absolute-positioned bypass connectors on mobile */
+    .fg-fastpath-bypass-connector,
+    .pa-fastpath-bypass-connector,
+    .cisco-fastpath-bypass-connector,
+    .cp-multipath-connectors-wrapper {
+        display: none !important;
+    }
+
+    /* Step info card */
+    .step-info-card {
+        padding: 0.75rem;
+    }
+
+    .step-info-card h3 {
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .details-box {
+        padding: 0.5rem 0.6rem;
+        gap: 0.25rem;
+    }
+
+    .details-step-title {
+        font-size: 0.85rem;
+    }
+
+    .details-explanation-box {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.5rem;
+    }
+
+    .details-desc {
+        font-size: 0.75rem;
+    }
+
+    .verdict-badge-step {
+        font-size: 0.55rem;
+    }
+
+    .cli-log-line {
+        font-size: 0.6rem;
+        padding: 0.4rem;
+    }
+
+    .verdict-banner {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .verdict-banner-container {
+        margin-top: 2rem;
+    }
+
+    /* Terminal console */
+    .terminal-card {
+        padding: 0.75rem;
+        min-height: 130px;
+    }
+
+    .terminal-body {
+        font-size: 0.7rem;
+        padding: 0.5rem;
+        max-height: 100px;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE: Small Mobile (max-width: 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+    body {
+        padding: 0.5rem;
+    }
+
+    .app-container {
+        gap: 0.75rem;
+    }
+
+    .logo-area h1 {
+        font-size: 1.2rem;
+    }
+
+    .brand-tab {
+        padding: 0.3rem 0.4rem;
+        font-size: 0.7rem;
+        min-width: 60px;
+    }
+
+    .metadata-token-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .node {
+        min-width: 50px;
+        padding: 0.25rem 0.35rem;
+        font-size: 0.62rem;
+    }
+
+    .node-title {
+        font-size: 0.6rem;
+    }
+
+    .pipeline-container {
+        padding: 0.35rem;
+    }
+
+    .visualizer-canvas {
+        padding: 0.5rem;
+    }
+
+    .details-step-title {
+        font-size: 0.8rem;
+    }
+}
